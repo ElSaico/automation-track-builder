@@ -3,7 +3,7 @@
 </div>
 
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-md-7">
         <div class="jumbotron">
             <h3>
                 There will be a canvas here!
@@ -12,26 +12,92 @@
             </h3>
         </div>
     </div>
-    <div class="col-lg-4">
+    <div class="col-md-5">
         <p>
             <button type="button" class="btn btn-default btn-lg btn-block">
                 <span class="glyphicon glyphicon-picture"></span>
                 Load background
             </button>
-        <div class="btn-group btn-group-lg btn-group-justified">
-            <div class="btn-group">
-                <button type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-import"></span>
-                    Import file
-                </button>
+            <div class="btn-group btn-group-lg btn-group-justified">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-import"></span>
+                        Import file
+                    </button>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-export"></span>
+                        Export file
+                    </button>
+                </div>
             </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default">
-                    <span class="glyphicon glyphicon-export"></span>
-                    Export file
-                </button>
+        </p>
+        <p>
+            <div class="form-group">
+                <label>Track name</label>
+                <input type="text" class="form-control" />
             </div>
-        </div>
+            <div class="form-group">
+                <label>Start position (px)</label>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">X</span>
+                            <input type="number" class="form-control" min="1" max="1280" />
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">Y</span>
+                            <input type="number" class="form-control" min="1" max="720" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Sector distance (m)</label>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">1</span>
+                            <input type="number" class="form-control" min="1" />
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <span class="input-group-addon">2</span>
+                            <input type="number" class="form-control" min="1" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Scale</label>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <input type="number" class="form-control" min="1" />
+                            <span class="input-group-addon">px</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="input-group">
+                            <input type="number" class="form-control" min="1" />
+                            <span class="input-group-addon">m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-default btn-block">
+                <span class="glyphicon glyphicon-plus"></span>
+                New corner
+            </button>
+            <button class="btn btn-default btn-block">
+                <span class="glyphicon glyphicon-remove"></span>
+                Remove last corner
+            </button>
         </p>
     </div>
 </div>
