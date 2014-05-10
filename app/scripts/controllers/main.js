@@ -2,9 +2,11 @@
 
 angular.module('automationTrackBuilderApp')
   .controller('MainCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+    $scope.track = {
+        name: "Track",
+        start: {x: 640, y: 360},
+        split1: 1,
+        split2: 2,
+        scale: {pixels: 20, meters: 10}
+    };
   });
