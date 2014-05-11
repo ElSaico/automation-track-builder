@@ -122,7 +122,10 @@ angular.module('automationTrackBuilderApp')
                                 break;
                             case "Slope":
                                 field.value.fields.forEach(function(innerField) {
-                                    result.slope.push(innerField.value.value);
+                                    if (innerField.value.operator == '-')
+                                        result.slope.push(-innerField.value.argument.value);
+                                    else
+                                        result.slope.push(innerField.value.value);
                                 });
                                 break;
                             case "Sportiness":
@@ -132,7 +135,10 @@ angular.module('automationTrackBuilderApp')
                                 break;
                             case "Camber":
                                 field.value.fields.forEach(function(innerField) {
-                                    result.camber.push(innerField.value.value);
+                                    if (innerField.value.operator == '-')
+                                        result.camber.push(-innerField.value.argument.value);
+                                    else
+                                        result.camber.push(innerField.value.value);
                                 });
                                 break;
                         }
@@ -141,7 +147,7 @@ angular.module('automationTrackBuilderApp')
                         result.corners.push({
                             layout: result.layout[i],
                             layoutInfo: result.layoutInfo[i],
-                            cornerRadius: result.cornerRadius[i],
+                            radius: result.cornerRadius[i],
                             slope: result.slope[i],
                             sportiness: result.sportiness[i],
                             camber: result.camber[i]

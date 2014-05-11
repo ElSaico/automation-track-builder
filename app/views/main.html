@@ -136,7 +136,7 @@
     <div class="col-sm-5">
         <div class="form-group">
             <label>Sportiness</label>
-            <input type="range" class="form-control" min="0" max="5" ng-model="corners[selected].sportiness" />
+            <input type="range" class="form-control" min="0" max="5" step="0.0001" ng-model="corners[selected].sportiness" />
         </div>
         <div class="form-group" ng-if="corners[selected].layout === 0">
             <label>Length</label>
