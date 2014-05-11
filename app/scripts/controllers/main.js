@@ -43,22 +43,27 @@ angular.module('automationTrackBuilderApp')
             sportiness: 0
         };
 
-        $scope.loadBG = function() {
-            if (!overview) overview = trackOverview('track-overview');
-            var field = document.getElementById('background-file');
-            var reader = new FileReader();
-            reader.onloadend = function(e) {
-                var imgObj = new Image();
-                imgObj.src = e.target.result;
-                imgObj.onload = function() {
-                    overview.setBackground(imgObj);
+        var loadFile = function(fieldId, onloadend) {
+            return function() {
+                if (!overview) overview = trackOverview('track-overview');
+                var field = document.getElementById(fieldId);
+                var reader = new FileReader();
+                reader.onloadend = function (e) {
+                    onloadend(e.target.result);
                 };
+                field.onchange = function (e) {
+                    reader.readAsDataURL(e.target.files[0]);
+                };
+                field.click();
             };
-            field.onchange = function(e) {
-                reader.readAsDataURL(e.target.files[0]);
-            };
-            field.click();
         };
+        $scope.loadBG = loadFile('background-file', function(result) {
+            var imgObj = new Image();
+            imgObj.src = result;
+            imgObj.onload = function() {
+                overview.setBackground(imgObj);
+            };
+        });
 
         $scope.cornerPush = function() {
             var newlen = $scope.corners.push($scope.defaultCorner);
