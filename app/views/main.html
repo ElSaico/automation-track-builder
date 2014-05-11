@@ -14,12 +14,12 @@
         </div>
     </div>
     <div class="col-sm-4">
-        <button class="btn btn-default btn-block">
-            <span class="glyphicon glyphicon-plus" ng-click="cornerPush()"></span>
+        <button class="btn btn-default btn-block" ng-click="cornerPush()">
+            <span class="glyphicon glyphicon-plus"></span>
             Append corner
         </button>
-        <button class="btn btn-default btn-block">
-            <span class="glyphicon glyphicon-remove" ng-click="cornerPop()"></span>
+        <button class="btn btn-default btn-block" ng-click="cornerPop()">
+            <span class="glyphicon glyphicon-remove"></span>
             Remove last corner
         </button>
     </div>
@@ -92,7 +92,7 @@
     </div>
 </div>
 <br/>
-<div class="row" ng-if="track.curCorner">
+<div class="row" ng-if="selected >= 0">
     <div class="visible-xs">
         <div class="btn-group btn-group-lg btn-group-justified">
             <div class="btn-group">
@@ -129,27 +129,27 @@
     <div class="col-sm-5">
         <div class="form-group">
             <label>Sportiness</label>
-            <input type="range" class="form-control" min="0" max="5" ng-model="track.curCorner.sportiness" />
+            <input type="range" class="form-control" min="0" max="5" ng-model="track.corners[selected].sportiness" />
         </div>
-        <div class="form-group" ng-if="track.curCorner.layout === 0">
+        <div class="form-group" ng-if="track.corners[selected].layout === 0">
             <label>Length</label>
             <div class="input-group">
-                <input type="number" class="form-control" min="1" ng-model="track.curCorner.layoutInfo" />
+                <input type="number" class="form-control" min="1" ng-model="track.corners[selected].layoutInfo" />
                 <span class="input-group-addon">m</span>
             </div>
         </div>
-        <div class="form-group" ng-if="track.curCorner.layout !== 0">
-            <label>Angle</label>
-            <div class="input-group">
-                <input type="number" class="form-control" min="1" max="360" step="0.5" ng-model="track.curCorner.layoutInfo" />
-                <span class="input-group-addon">º</span>
-            </div>
-        </div>
-        <div class="form-group" ng-if="track.curCorner.layout !== 0">
+        <div class="form-group" ng-if="track.corners[selected].layout !== 0">
             <label>Corner radius</label>
             <div class="input-group">
-                <input type="number" class="form-control" min="1" ng-model="track.curCorner.radius" />
+                <input type="number" class="form-control" min="1" ng-model="track.corners[selected].radius" />
                 <span class="input-group-addon">m</span>
+            </div>
+        </div>
+        <div class="form-group" ng-if="track.corners[selected].layout !== 0">
+            <label>Angle</label>
+            <div class="input-group">
+                <input type="number" class="form-control" min="1" max="360" step="0.5" ng-model="track.corners[selected].layoutInfo" />
+                <span class="input-group-addon">º</span>
             </div>
         </div>
     </div>
@@ -157,14 +157,14 @@
         <div class="form-group">
             <label>Slope</label>
             <div class="input-group">
-                <input type="number" class="form-control" min="-100" max="100" ng-model="track.curCorner.slope" />
+                <input type="number" class="form-control" min="-100" max="100" ng-model="track.corners[selected].slope" />
                 <span class="input-group-addon">%</span>
             </div>
         </div>
         <div class="form-group">
             <label>Camber</label>
             <div class="input-group">
-                <input type="number" class="form-control" min="-90" max="90" ng-model="track.curCorner.camber" />
+                <input type="number" class="form-control" min="-90" max="90" ng-model="track.corners[selected].camber" />
                 <span class="input-group-addon">º</span>
             </div>
         </div>
