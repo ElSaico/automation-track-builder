@@ -6,12 +6,10 @@ angular.module('automationTrackBuilderApp')
             var canvas = new fabric.Canvas(el);
             var background = new fabric.Image();
             background.set({
-                angle: 0,
-                width: 640,
-                height: 360,
+                scaleX: 0.5,
+                scaleY: 0.5,
                 selectable: false
             });
-            canvas.centerObject(background);
             canvas.add(background);
 
             return {
@@ -205,7 +203,6 @@ angular.module('automationTrackBuilderApp')
         $scope.cornerPush = function() {
             var newlen = $scope.corners.push($scope.defaultCorner);
             $scope.selected = newlen-1;
-            $scope.$apply();
         };
         $scope.cornerPop = function() {
             $scope.corners.pop();
