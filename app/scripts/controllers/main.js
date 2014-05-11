@@ -201,7 +201,8 @@ angular.module('automationTrackBuilderApp')
         };
 
         $scope.cornerPush = function() {
-            var newlen = $scope.corners.push($scope.defaultCorner);
+            var corner = angular.copy($scope.defaultCorner);
+            var newlen = $scope.corners.push(corner);
             $scope.selected = newlen-1;
         };
         $scope.cornerPop = function() {
