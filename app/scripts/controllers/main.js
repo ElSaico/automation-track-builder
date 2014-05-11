@@ -27,6 +27,7 @@ angular.module('automationTrackBuilderApp')
         var RIGHT = -1;
 
         var overview;
+        var trackTemplate;
         $scope.name = "Track";
         $scope.start = {x: 640, y: 360};
         $scope.split1 = 1;
@@ -167,10 +168,44 @@ angular.module('automationTrackBuilderApp')
                 }
             });
         });
+        $scope.exportFile = function() {
+            if (!trackTemplate) {
+                trackTemplate = angular.element("#track-template").text();
+                Mustache.parse(trackTemplate);
+            }
+            var data = {
+                name: $scope.name,
+                start: $scope.start,
+                split1: $scope.split1,
+                split2: $scope.split2,
+                scale: $scope.scale,
+                layout: [],
+                layoutInfo: [],
+                cornerRadius: [],
+                slope: [],
+                sportiness: [],
+                camber: []
+            };
+            $scope.corners.forEach(function(corner) {
+                switch(corner.layout) {
+                    case  0: data.layout.push("STRAIGHT"); break;
+                    case  1: data.layout.push("LEFT"); break;
+                    case -1: data.layout.push("RIGHT"); break;
+                }
+                data.layoutInfo.push(corner.layoutInfo);
+                data.cornerRadius.push(corner.radius);
+                data.slope.push(corner.slope);
+                data.sportiness.push(corner.sportiness);
+                data.camber.push(corner.camber);
+            });
+            var track = Mustache.render(trackTemplate, data);
+            window.open("data:text/x-lua;base64,"+btoa(track), '_blank');
+        };
 
         $scope.cornerPush = function() {
             var newlen = $scope.corners.push($scope.defaultCorner);
             $scope.selected = newlen-1;
+            $scope.$apply();
         };
         $scope.cornerPop = function() {
             $scope.corners.pop();

@@ -177,3 +177,30 @@
         </div>
     </div>
 </div>
+
+<script id="track-template" type="text/x-lua">
+--You Can use 0, 1, -1 instead.
+local STRAIGHT = 0
+local LEFT = 1
+local RIGHT = -1
+
+Track = {
+        Name = "{{name}}",
+        --Track Image Info
+        --Track Image must be 1280 x 720
+        --Start Position on the Image x,y from Top Left
+        Start = { {{start.x}}, {{start.y}} },
+
+        --How many pixels per meter ( Pixels / Length )
+        --Measure a long straight and then manipulate from there
+        Scale = {{scale.pixels}} / {{scale.meters}},
+        Layout = { {{#layout}}{{.}}, {{/layout}}},
+        LayoutInfo = { {{#layoutInfo}}{{.}}, {{/layoutInfo}}},
+        CornerRadius = { {{#cornerRadius}}{{.}}, {{/cornerRadius}}},
+        Slope = { {{#slope}}{{.}}, {{/slope}}},
+        Sportiness = { {{#sportiness}}{{.}}, {{/sportiness}}},
+        Camber = { {{#camber}}{{.}}, {{/camber}}},
+        Split1 = {{split1}},
+        Split2 = {{split2}},
+}
+</script>
