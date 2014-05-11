@@ -3,7 +3,7 @@
 angular.module('automationTrackBuilderApp')
     .factory('trackOverview', function($rootScope) {
         return function(el) {
-            var canvas = new fabric.Canvas(el);
+            var canvas = new fabric.Canvas(el, {containerClass: "center-block"});
             var background = new fabric.Image();
             background.set({
                 scaleX: 0.5,
