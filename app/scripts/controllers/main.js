@@ -142,9 +142,11 @@ angular.module('automationTrackBuilderApp')
             };
         });
         $scope.importFile = loadFile('import-file', function(result) {
-            if (result.substr(0,23) != "data:text/x-lua;base64,")
-                throw Error("Not a Lua script");
-            var script = atob(result.substr(23));
+            // this doesn't work on Windows...
+            //if (result.substr(0,23) != "data:text/x-lua;base64,")
+            //    throw Error("Not a Lua script");
+            //var script = atob(result.substr(23));
+            var script = atob(result.split('base64,')[1]);
             var ast = luaparse.parse(script);
             ast.body.forEach(function(root) {
                 if (root.variables[0].name == "Track") {
