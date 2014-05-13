@@ -21,7 +21,7 @@ angular.module('automationTrackBuilderApp')
                 lockScalingX: true,
                 lockScalingY: true,
                 hasControls: false,
-                fill: 'red',
+                fill: 'transparent',
                 stroke: 'red',
                 strokeWidth: 5
             };
@@ -48,6 +48,7 @@ angular.module('automationTrackBuilderApp')
                             dst = new fabric.Point(position.x+dx, position.y+dy);
                             object = new fabric.Line([position.x, position.y, dst.x, dst.y], lineDefaults);
                         } else {
+                            var originalAngle = angle;
                             if (corner.layout == LEFT) {
                                 angle = (angle - (corner.layoutInfo/2)) % 360;
                             } else {
@@ -62,8 +63,18 @@ angular.module('automationTrackBuilderApp')
                                 angle = (angle + (corner.layoutInfo/2)) % 360;
                             }
                             dst = new fabric.Point(position.x+dx, position.y+dy);
-                            // TODO: calculate (xm, ym) and replace line with quadratic curve
-                            object = new fabric.Line([position.x, position.y, dst.x, dst.y], lineDefaults);
+
+                            var midOrdinate = corner.radius*(1-Math.cos(corner.layoutInfo*Math.PI/360));
+                            var ctrlAngle = Math.atan(2*midOrdinate / chord);
+                            if (corner.layout == LEFT) {
+                                ctrlAngle = (originalAngle*Math.PI/180) - ctrlAngle;
+                            } else {
+                                ctrlAngle = (originalAngle*Math.PI/180) + ctrlAngle;
+                            }
+                            var ctrlX = position.x + (midOrdinate*ratio) * Math.cos(ctrlAngle);
+                            var ctrlY = position.y + (midOrdinate*ratio) * Math.sin(ctrlAngle);
+                            var path = "M "+position.x+" "+position.y+" Q "+ctrlX+", "+ctrlY+", "+dst.x+", "+dst.y;
+                            object = new fabric.Path(path, lineDefaults);
                         }
                         object.pos = i;
                         object.on('selected', function(e) {
