@@ -1,29 +1,88 @@
 'use strict';
 
+var STRAIGHT = 0;
+var LEFT = 1;
+var RIGHT = -1;
+
 angular.module('automationTrackBuilderApp')
-    .factory('trackOverview', function($rootScope) {
-        return function(el) {
+    .factory('trackOverview', function() {
+        return function(callerScope, el) {
+            var caller = callerScope; // this must be very, very wrong
             var canvas = new fabric.Canvas(el, {containerClass: "center-block"});
-            var background = new fabric.Image();
-            background.set({
-                scaleX: 0.5,
-                scaleY: 0.5,
-                selectable: false
+            var lineDefaults = {
+                originX: 'center',
+                originY: 'center',
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                hasControls: false,
+                fill: 'red',
+                stroke: 'red',
+                strokeWidth: 5
+            };
+            var start = new fabric.Circle({left: -10, top: -10, radius: 5, fill: 'red'});
+            var corners = [];
+            canvas.add(start);
+            canvas.on('selection:cleared', function() {
+                caller.selected = caller.corners.length-1;
+                caller.$apply();
             });
-            canvas.add(background);
 
             return {
-                setBackground: function(imgObj) {
-                    background.setElement(imgObj);
+                draw: function() {
+                    var angle = 0;
+                    var position = new fabric.Point(caller.start.x/2, caller.start.y/2);
+                    var ratio = caller.scale.pixels / (2*caller.scale.meters);
+                    start.setPositionByOrigin(position);
+                    corners.forEach(function(corner, i) {
+                        corner.remove();
+                        delete corners[i];
+                    });
+                    caller.corners.forEach(function(corner, i) {
+                        var dst, object;
+                        if (corner.layout == STRAIGHT) {
+                            var dx = (corner.layoutInfo*ratio) * Math.cos(angle*Math.PI/180);
+                            var dy = (corner.layoutInfo*ratio) * Math.sin(angle*Math.PI/180);
+                            dst = new fabric.Point(position.x+dx, position.y+dy);
+                            object = new fabric.Line([position.x, position.y, dst.x, dst.y], lineDefaults);
+                        } else {
+                            if (corner.layout == LEFT) {
+                                angle = (angle - (corner.layoutInfo/2)) % 360;
+                            } else {
+                                angle = (angle + (corner.layoutInfo/2)) % 360;
+                            }
+                            var chord = 2 * corner.radius * Math.sin(corner.layoutInfo*Math.PI/360);
+                            var dx = (chord*ratio) * Math.cos(angle*Math.PI/180);
+                            var dy = (chord*ratio) * Math.sin(angle*Math.PI/180);
+                            if (corner.layout == LEFT) {
+                                angle = (angle - (corner.layoutInfo/2)) % 360;
+                            } else {
+                                angle = (angle + (corner.layoutInfo/2)) % 360;
+                            }
+                            dst = new fabric.Point(position.x+dx, position.y+dy);
+                            // TODO: calculate (xm, ym) and replace line with quadratic curve
+                            object = new fabric.Line([position.x, position.y, dst.x, dst.y], lineDefaults);
+                        }
+                        object.pos = i;
+                        object.on('selected', function(e) {
+                            caller.selected = this.pos;
+                            caller.$apply();
+                        });
+                        corners.push(object);
+                        canvas.add(object);
+                        position = dst;
+                    });
                     canvas.renderAll();
+                },
+                setBackground: function(imgObj) {
+                    var img = new fabric.Image(imgObj, {width: canvas.width, height: canvas.height});
+                    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
                 }
             };
         };
     }).controller('MainCtrl', function ($scope, trackOverview) {
-        var STRAIGHT = 0;
-        var LEFT = 1;
-        var RIGHT = -1;
-
         var overview;
         var trackTemplate;
         $scope.name = "Track";
@@ -42,9 +101,16 @@ angular.module('automationTrackBuilderApp')
             sportiness: 0
         };
 
+        var setOverview = function() {
+            overview = trackOverview($scope, 'track-overview');
+            $scope.$watchCollection('start', function(a, b) { overview.draw() });
+            $scope.$watchCollection('scale', function(a, b) { overview.draw() });
+            $scope.$watch('corners', function(a, b) { overview.draw() }, true);
+        }
+
         var loadFile = function(fieldId, onloadend) {
             return function() {
-                if (!overview) overview = trackOverview('track-overview');
+                if (!overview) setOverview();
                 var field = document.getElementById(fieldId);
                 var reader = new FileReader();
                 reader.onloadend = function (e) {
