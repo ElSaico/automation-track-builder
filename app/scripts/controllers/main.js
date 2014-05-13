@@ -8,7 +8,10 @@ angular.module('automationTrackBuilderApp')
     .factory('trackOverview', function() {
         return function(callerScope, el) {
             var caller = callerScope; // this must be very, very wrong
-            var canvas = new fabric.Canvas(el, {containerClass: "center-block"});
+            var canvas = new fabric.Canvas(el, {
+                containerClass: "center-block",
+                selection: false
+            });
             var lineDefaults = {
                 originX: 'center',
                 originY: 'center',
@@ -25,13 +28,10 @@ angular.module('automationTrackBuilderApp')
             var start = new fabric.Circle({left: -10, top: -10, radius: 5, fill: 'red'});
             var corners = [];
             canvas.add(start);
-            canvas.on('selection:cleared', function() {
-                caller.selected = caller.corners.length-1;
-                caller.$apply();
-            });
 
             return {
                 draw: function() {
+                    var prevSelected = caller.selected;
                     var angle = 0;
                     var position = new fabric.Point(caller.start.x/2, caller.start.y/2);
                     var ratio = caller.scale.pixels / (2*caller.scale.meters);
@@ -70,11 +70,12 @@ angular.module('automationTrackBuilderApp')
                             caller.selected = this.pos;
                             caller.$apply();
                         });
-                        corners.push(object);
+                        corners[i] = object;
                         canvas.add(object);
                         position = dst;
                     });
                     canvas.renderAll();
+                    canvas.setActiveObject(corners[prevSelected]);
                 },
                 setBackground: function(imgObj) {
                     var img = new fabric.Image(imgObj, {width: canvas.width, height: canvas.height});
