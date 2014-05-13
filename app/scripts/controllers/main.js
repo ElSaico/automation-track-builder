@@ -27,6 +27,11 @@ angular.module('automationTrackBuilderApp')
             };
             var start = new fabric.Circle({left: -10, top: -10, radius: 5, fill: 'red'});
             var corners = [];
+            var cornerJointDefaults = {
+                radius: 2.5,
+                fill: 'red',
+                selectable: false
+            };
             canvas.add(start);
 
             return {
@@ -36,10 +41,7 @@ angular.module('automationTrackBuilderApp')
                     var position = new fabric.Point(caller.start.x/2, caller.start.y/2);
                     var ratio = caller.scale.pixels / (2*caller.scale.meters);
                     start.setPositionByOrigin(position);
-                    corners.forEach(function(corner, i) {
-                        corner.remove();
-                        delete corners[i];
-                    });
+                    canvas.clear();
                     caller.corners.forEach(function(corner, i) {
                         var dst, object;
                         if (corner.layout == STRAIGHT) {
@@ -76,14 +78,19 @@ angular.module('automationTrackBuilderApp')
                             var path = "M "+position.x+" "+position.y+" Q "+ctrlX+", "+ctrlY+", "+dst.x+", "+dst.y;
                             object = new fabric.Path(path, lineDefaults);
                         }
+                        var cornerJoint = new fabric.Circle(cornerJointDefaults);
+                        cornerJoint.setPositionByOrigin(dst);
+                        canvas.add(cornerJoint);
                         object.pos = i;
                         object.on('selected', function(e) {
                             caller.selected = this.pos;
                             caller.$apply();
                         });
                         corners[i] = object;
-                        canvas.add(object);
                         position = dst;
+                    });
+                    corners.forEach(function(corner) {
+                        canvas.add(corner);
                     });
                     canvas.renderAll();
                     canvas.setActiveObject(corners[prevSelected]);
