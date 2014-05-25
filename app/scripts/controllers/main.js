@@ -6,6 +6,9 @@ var RIGHT = -1;
 
 angular.module('automationTrackBuilderApp')
     .factory('trackOverview', function() {
+        var toRadians = function(degree) {
+            return (degree/180) * Math.PI;
+        };
         return function(callerScope, el) {
             var caller = callerScope; // this must be very, very wrong
             var canvas = new fabric.Canvas(el, {
@@ -45,8 +48,8 @@ angular.module('automationTrackBuilderApp')
                     caller.corners.forEach(function(corner, i) {
                         var dst, object;
                         if (corner.layout == STRAIGHT) {
-                            var dx = (corner.layoutInfo*ratio) * Math.cos(angle*Math.PI/180);
-                            var dy = (corner.layoutInfo*ratio) * Math.sin(angle*Math.PI/180);
+                            var dx = (corner.layoutInfo*ratio) * Math.cos(toRadians(angle));
+                            var dy = (corner.layoutInfo*ratio) * Math.sin(toRadians(angle));
                             dst = new fabric.Point(position.x+dx, position.y+dy);
                             object = new fabric.Line([position.x, position.y, dst.x, dst.y], lineDefaults);
                         } else {
@@ -56,9 +59,9 @@ angular.module('automationTrackBuilderApp')
                             } else {
                                 angle = (angle + (corner.layoutInfo/2)) % 360;
                             }
-                            var chord = 2 * corner.radius * Math.sin(corner.layoutInfo*Math.PI/360);
-                            var dx = (chord*ratio) * Math.cos(angle*Math.PI/180);
-                            var dy = (chord*ratio) * Math.sin(angle*Math.PI/180);
+                            var chord = 2 * corner.radius * Math.sin(toRadians(corner.layoutInfo/2));
+                            var dx = (chord*ratio) * Math.cos(toRadians(angle));
+                            var dy = (chord*ratio) * Math.sin(toRadians(angle));
                             if (corner.layout == LEFT) {
                                 angle = (angle - (corner.layoutInfo/2)) % 360;
                             } else {
@@ -66,16 +69,16 @@ angular.module('automationTrackBuilderApp')
                             }
                             dst = new fabric.Point(position.x+dx, position.y+dy);
 
-                            var midOrdinate = corner.radius*(1-Math.cos(corner.layoutInfo*Math.PI/360));
+                            var midOrdinate = corner.radius*(1-Math.cos(toRadians(corner.layoutInfo/2)));
                             var ctrlAngle = Math.atan(2*midOrdinate / chord);
                             if (corner.layout == LEFT) {
-                                ctrlAngle = (originalAngle*Math.PI/180) - ctrlAngle;
+                                ctrlAngle = toRadians(originalAngle) - ctrlAngle;
                             } else {
-                                ctrlAngle = (originalAngle*Math.PI/180) + ctrlAngle;
+                                ctrlAngle = toRadians(originalAngle) + ctrlAngle;
                             }
                             var ctrlX = position.x + (midOrdinate*ratio) * Math.cos(ctrlAngle);
                             var ctrlY = position.y + (midOrdinate*ratio) * Math.sin(ctrlAngle);
-                            var path = "M "+position.x+" "+position.y+" Q "+ctrlX+", "+ctrlY+", "+dst.x+", "+dst.y;
+                            var path = [["M", position.x, position.y], ["Q", ctrlX, ctrlY, dst.x, dst.y]];
                             object = new fabric.Path(path, lineDefaults);
                         }
                         var cornerJoint = new fabric.Circle(cornerJointDefaults);
