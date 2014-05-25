@@ -93,7 +93,8 @@ angular.module('automationTrackBuilderApp')
                         canvas.add(corner);
                     });
                     canvas.renderAll();
-                    canvas.setActiveObject(corners[prevSelected]);
+                    if (prevSelected >= 0)
+                        canvas.setActiveObject(corners[prevSelected]);
                 },
                 setBackground: function(imgObj) {
                     var img = new fabric.Image(imgObj, {width: canvas.width, height: canvas.height});
