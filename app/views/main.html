@@ -10,7 +10,7 @@
     <div class="col-sm-4">
         <div class="form-group">
             <label>Track name</label>
-            <input type="text" class="form-control" ng-model="name" />
+            <input type="text" class="form-control" ng-model="properties.name" />
         </div>
     </div>
     <div class="col-sm-4">
@@ -53,12 +53,12 @@
             <label>Start position</label>
             <div class="input-group">
                 <span class="input-group-addon">X</span>
-                <input type="number" class="form-control" min="1" max="1280" ng-model="start.x" />
+                <input type="number" class="form-control" min="1" max="1280" ng-model="properties.start.x" />
                 <span class="input-group-addon">px</span>
             </div>
             <div class="input-group">
                 <span class="input-group-addon">Y</span>
-                <input type="number" class="form-control" min="1" max="720" ng-model="start.y" />
+                <input type="number" class="form-control" min="1" max="720" ng-model="properties.start.y" />
                 <span class="input-group-addon">px</span>
             </div>
         </div>
@@ -68,12 +68,12 @@
             <label>Sector distance</label>
             <div class="input-group">
                 <span class="input-group-addon">1</span>
-                <input type="number" class="form-control" min="1" step="0.1" ng-model="split1" />
+                <input type="number" class="form-control" min="1" step="0.1" ng-model="properties.split1" />
                 <span class="input-group-addon">m</span>
             </div>
             <div class="input-group">
                 <span class="input-group-addon">2</span>
-                <input type="number" class="form-control" min="1" step="0.1" ng-model="split2" />
+                <input type="number" class="form-control" min="1" step="0.1" ng-model="properties.split2" />
                 <span class="input-group-addon">m</span>
             </div>
         </div>
@@ -82,11 +82,11 @@
         <div class="form-group">
             <label>Scale</label>
                 <div class="input-group">
-                    <input type="number" class="form-control" min="1" ng-model="scale.pixels" />
+                    <input type="number" class="form-control" min="1" ng-model="properties.scale.pixels" />
                     <span class="input-group-addon">px</span>
                 </div>
                 <div class="input-group">
-                    <input type="number" class="form-control" min="1" ng-model="scale.meters" />
+                    <input type="number" class="form-control" min="1" ng-model="properties.scale.meters" />
                     <span class="input-group-addon">m</span>
                 </div>
         </div>

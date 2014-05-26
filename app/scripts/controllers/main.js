@@ -41,8 +41,8 @@ angular.module('automationTrackBuilderApp')
                 draw: function() {
                     var prevSelected = caller.selected;
                     var angle = 0;
-                    var position = new fabric.Point(caller.start.x/2, caller.start.y/2);
-                    var ratio = caller.scale.pixels / (2*caller.scale.meters);
+                    var position = new fabric.Point(caller.properties.start.x/2, caller.properties.start.y/2);
+                    var ratio = caller.properties.scale.pixels / (2*caller.properties.scale.meters);
                     start.setPositionByOrigin(position);
                     canvas.clear();
                     caller.corners.forEach(function(corner, i) {
@@ -108,11 +108,13 @@ angular.module('automationTrackBuilderApp')
     }).controller('MainCtrl', function ($scope, trackOverview) {
         var overview;
         var trackTemplate;
-        $scope.name = "Track";
-        $scope.start = {x: 640, y: 360};
-        $scope.split1 = 1;
-        $scope.split2 = 2;
-        $scope.scale = {pixels: 20, meters: 10};
+        $scope.properties = {
+            name: "Track",
+            start: {x: 640, y: 360},
+            split1: 1,
+            split2: 2,
+            scale: {pixels: 20, meters: 10}
+        };
         $scope.corners = [];
         $scope.selected = -1;
         $scope.defaultCorner = {
@@ -126,8 +128,8 @@ angular.module('automationTrackBuilderApp')
 
         var setOverview = function() {
             overview = trackOverview($scope, 'track-overview');
-            $scope.$watchCollection('start', function(a, b) { overview.draw() });
-            $scope.$watchCollection('scale', function(a, b) { overview.draw() });
+            $scope.$watchCollection('properties.start', function(a, b) { overview.draw() });
+            $scope.$watchCollection('properties.scale', function(a, b) { overview.draw() });
             $scope.$watch('corners', function(a, b) { overview.draw() }, true);
         }
 
@@ -163,16 +165,14 @@ angular.module('automationTrackBuilderApp')
                 if (root.variables[0].name == "Track") {
                     var identifiers = {STRAIGHT: 0, LEFT: 1, RIGHT: -1};
                     var result = {
-                        start: {},
-                        scale: {},
                         layout: [],
                         layoutInfo: [],
                         cornerRadius: [],
                         slope: [],
                         sportiness: [],
-                        camber: [],
-                        corners: []
+                        camber: []
                     };
+                    var corners = [];
                     root.init[0].fields.forEach(function(field) {
                         switch(field.key.name) {
                             case "Name": result.name = field.value.value; break;
@@ -234,7 +234,7 @@ angular.module('automationTrackBuilderApp')
                         }
                     });
                     for (var i = 0; i < result.layout.length; i++) {
-                        result.corners.push({
+                        corners.push({
                             layout: result.layout[i],
                             layoutInfo: result.layoutInfo[i],
                             radius: result.cornerRadius[i],
@@ -250,9 +250,10 @@ angular.module('automationTrackBuilderApp')
                     delete result.sportiness;
                     delete result.camber;
                     Object.keys(result).forEach(function(i) {
-                        $scope[i] = result[i];
+                        $scope.properties[i] = result[i];
                     });
-                    $scope.selected = result.corners.length-1;
+                    $scope.corners = corners;
+                    $scope.selected = corners.length-1;
                     $scope.$apply();
                 }
             });
@@ -262,19 +263,13 @@ angular.module('automationTrackBuilderApp')
                 trackTemplate = angular.element("#track-template").text();
                 Mustache.parse(trackTemplate);
             }
-            var data = {
-                name: $scope.name,
-                start: $scope.start,
-                split1: $scope.split1,
-                split2: $scope.split2,
-                scale: $scope.scale,
-                layout: [],
-                layoutInfo: [],
-                cornerRadius: [],
-                slope: [],
-                sportiness: [],
-                camber: []
-            };
+            var data = angular.copy($scope.properties);
+            data.layout = [];
+            data.layoutInfo = [];
+            data.cornerRadius = [];
+            data.slope = [];
+            data.sportiness = [];
+            data.camber = [];
             $scope.corners.forEach(function(corner) {
                 switch(corner.layout) {
                     case  0: data.layout.push("STRAIGHT"); break;
