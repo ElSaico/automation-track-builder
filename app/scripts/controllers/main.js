@@ -69,15 +69,15 @@ angular.module('automationTrackBuilderApp')
                             }
                             dst = new fabric.Point(position.x+dx, position.y+dy);
 
-                            var midOrdinate = corner.radius*(1-Math.cos(toRadians(corner.layoutInfo/2)));
-                            var ctrlAngle = Math.atan(2*midOrdinate / chord);
+                            var ctrlChord = 2 * corner.radius * Math.sin(toRadians(corner.layoutInfo/4));
+                            var ctrlAngle = originalAngle;
                             if (corner.layout == LEFT) {
-                                ctrlAngle = toRadians(originalAngle) - ctrlAngle;
+                                ctrlAngle -= (corner.layoutInfo/4) % 360;
                             } else {
-                                ctrlAngle = toRadians(originalAngle) + ctrlAngle;
+                                ctrlAngle += (corner.layoutInfo/4) % 360;
                             }
-                            var ctrlX = position.x + (midOrdinate*ratio) * Math.cos(ctrlAngle);
-                            var ctrlY = position.y + (midOrdinate*ratio) * Math.sin(ctrlAngle);
+                            var ctrlX = position.x + (ctrlChord*ratio) * Math.cos(toRadians(ctrlAngle));
+                            var ctrlY = position.y + (ctrlChord*ratio) * Math.sin(toRadians(ctrlAngle));
                             var path = [["M", position.x, position.y], ["Q", ctrlX, ctrlY, dst.x, dst.y]];
                             object = new fabric.Path(path, lineDefaults);
                         }
