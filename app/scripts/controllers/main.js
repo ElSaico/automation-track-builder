@@ -45,6 +45,7 @@ angular.module('automationTrackBuilderApp')
                     var ratio = caller.properties.scale.pixels / (2*caller.properties.scale.meters);
                     start.setPositionByOrigin(position);
                     canvas.clear();
+                    corners = [];
                     caller.corners.forEach(function(corner, i) {
                         var dst, object;
                         if (corner.layout == STRAIGHT) {
@@ -89,7 +90,7 @@ angular.module('automationTrackBuilderApp')
                             caller.selected = this.pos;
                             caller.$apply();
                         });
-                        corners[i] = object;
+                        corners.push(object);
                         position = dst;
                     });
                     corners.forEach(function(corner) {
