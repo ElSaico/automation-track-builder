@@ -16,6 +16,7 @@ angular.module('automationTrackBuilderApp')
                 containerClass: "center-block",
                 selection: false
             });
+            canvas.setBackgroundColor('gray');
             var lineDefaults = {
                 originX: 'center',
                 originY: 'center',
@@ -147,16 +148,15 @@ angular.module('automationTrackBuilderApp')
             });
         }, true);
 
-        var setOverview = function() {
+        $scope.$on('$includeContentLoaded', function() {
             overview = trackOverview($scope, 'track-overview');
             $scope.$watchCollection('properties.start', function(a, b) { overview.draw() });
             $scope.$watchCollection('properties.scale', function(a, b) { overview.draw() });
             $scope.$watch('corners', function(a, b) { overview.draw() }, true);
-        }
+        });
 
         var loadFile = function(fieldId, onloadend) {
             return function() {
-                if (!overview) setOverview();
                 var field = document.getElementById(fieldId);
                 var reader = new FileReader();
                 reader.onloadend = function (e) {
