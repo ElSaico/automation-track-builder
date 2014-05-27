@@ -4,11 +4,12 @@ var STRAIGHT = 0;
 var LEFT = 1;
 var RIGHT = -1;
 
+var toRadians = function(degree) {
+    return (degree/180) * Math.PI;
+};
+
 angular.module('automationTrackBuilderApp')
     .factory('trackOverview', function() {
-        var toRadians = function(degree) {
-            return (degree/180) * Math.PI;
-        };
         return function(callerScope, el) {
             var caller = callerScope; // this must be very, very wrong
             var canvas = new fabric.Canvas(el, {
@@ -126,6 +127,25 @@ angular.module('automationTrackBuilderApp')
             camber: 0,
             sportiness: 0
         };
+
+        $scope.$watch('corners', function(current, old) {
+            // can be optimized by only calculating the updated corner onwards
+            $scope.total2D = 0;
+            $scope.total3D = 0;
+            $scope.corners.forEach(function(corner) {
+                if (corner.layout == STRAIGHT) {
+                    corner.length2D = corner.layoutInfo;
+                } else {
+                    corner.length2D = corner.radius * toRadians(corner.layoutInfo);
+                }
+                var slopeAngle = Math.atan(corner.slope/100);
+                corner.length3D = corner.length2D / Math.cos(slopeAngle);
+                corner.distance2D = $scope.total2D;
+                corner.distance3D = $scope.total3D;
+                $scope.total2D += corner.length2D;
+                $scope.total3D += corner.length3D;
+            });
+        }, true);
 
         var setOverview = function() {
             overview = trackOverview($scope, 'track-overview');

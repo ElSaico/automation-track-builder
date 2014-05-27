@@ -12,6 +12,9 @@
             <label>Track name</label>
             <input type="text" class="form-control" ng-model="properties.name" />
         </div>
+        2D total length: {{ total2D|number:2 }}m
+        <br/>
+        3D total length: {{ total3D|number:2 }}m
     </div>
     <div class="col-sm-4">
         <button class="btn btn-default btn-block" ng-click="cornerPush()">
@@ -90,6 +93,21 @@
                     <span class="input-group-addon">m</span>
                 </div>
         </div>
+    </div>
+</div>
+<br/>
+<div class="row" ng-if="selected >= 0">
+    <div class="col-sm-5 col-sm-offset-1">
+        2D corner length: {{ corners[selected].length2D|number:2 }}m
+    </div>
+    <div class="col-sm-5">
+        3D corner length: {{ corners[selected].length3D|number:2 }}m
+    </div>
+    <div class="col-sm-5 col-sm-offset-1">
+        2D corner distance: {{ corners[selected].distance2D|number:2 }}m
+    </div>
+    <div class="col-sm-5">
+        3D corner distance: {{ corners[selected].distance3D|number:2 }}m
     </div>
 </div>
 <br/>
