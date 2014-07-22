@@ -1,15 +1,11 @@
 'use strict';
 
-var STRAIGHT = 0;
-var LEFT = 1;
-var RIGHT = -1;
-
 var toRadians = function(degree) {
     return (degree/180) * Math.PI;
 };
 
 angular.module('automationTrackBuilderApp')
-    .factory('trackOverview', function() {
+    .factory('trackOverview', ['directions', function(directions) {
         return function(callerScope, el) {
             var caller = callerScope; // this must be very, very wrong
             var canvas = new fabric.Canvas(el, {
@@ -50,14 +46,14 @@ angular.module('automationTrackBuilderApp')
                     corners = [];
                     caller.corners.forEach(function(corner, i) {
                         var dst, object;
-                        if (corner.layout == STRAIGHT) {
+                        if (corner.layout == directions.STRAIGHT) {
                             var dx = (corner.layoutInfo*ratio) * Math.cos(toRadians(angle));
                             var dy = (corner.layoutInfo*ratio) * Math.sin(toRadians(angle));
                             dst = new fabric.Point(position.x+dx, position.y+dy);
                             object = new fabric.Line([position.x, position.y, dst.x, dst.y], lineDefaults);
                         } else {
                             var originalAngle = angle;
-                            if (corner.layout == LEFT) {
+                            if (corner.layout == directions.LEFT) {
                                 angle = (angle - (corner.layoutInfo/2)) % 360;
                             } else {
                                 angle = (angle + (corner.layoutInfo/2)) % 360;
@@ -65,7 +61,7 @@ angular.module('automationTrackBuilderApp')
                             var chord = 2 * corner.radius * Math.sin(toRadians(corner.layoutInfo/2));
                             var dx = (chord*ratio) * Math.cos(toRadians(angle));
                             var dy = (chord*ratio) * Math.sin(toRadians(angle));
-                            if (corner.layout == LEFT) {
+                            if (corner.layout == directions.LEFT) {
                                 angle = (angle - (corner.layoutInfo/2)) % 360;
                             } else {
                                 angle = (angle + (corner.layoutInfo/2)) % 360;
@@ -74,7 +70,7 @@ angular.module('automationTrackBuilderApp')
 
                             var ctrlChord = 2 * corner.radius * Math.sin(toRadians(corner.layoutInfo/4));
                             var ctrlAngle = originalAngle;
-                            if (corner.layout == LEFT) {
+                            if (corner.layout == directions.LEFT) {
                                 ctrlAngle -= (corner.layoutInfo/4) % 360;
                             } else {
                                 ctrlAngle += (corner.layoutInfo/4) % 360;
@@ -108,7 +104,7 @@ angular.module('automationTrackBuilderApp')
                 }
             };
         };
-    }).controller('MainCtrl', function ($scope, trackOverview) {
+    }]).controller('MainCtrl', ['$scope', 'directions', 'trackOverview', function ($scope, directions, trackOverview) {
         var overview;
         var trackTemplate;
         $scope.properties = {
@@ -134,7 +130,7 @@ angular.module('automationTrackBuilderApp')
             $scope.total2D = 0;
             $scope.total3D = 0;
             $scope.corners.forEach(function(corner) {
-                if (corner.layout == STRAIGHT) {
+                if (corner.layout == directions.STRAIGHT) {
                     corner.length2D = corner.layoutInfo;
                 } else {
                     corner.length2D = corner.radius * toRadians(corner.layoutInfo);
@@ -184,7 +180,6 @@ angular.module('automationTrackBuilderApp')
             var ast = luaparse.parse(script);
             ast.body.forEach(function(root) {
                 if (root.variables[0].name == "Track") {
-                    var identifiers = {STRAIGHT: 0, LEFT: 1, RIGHT: -1};
                     var result = {
                         layout: [],
                         layoutInfo: [],
@@ -216,7 +211,7 @@ angular.module('automationTrackBuilderApp')
                             case "Layout":
                                 field.value.fields.forEach(function(innerField) {
                                     if (innerField.value.type == "Identifier")
-                                        result.layout.push(identifiers[innerField.value.name]);
+                                        result.layout.push(directions[innerField.value.name]);
                                     else if (innerField.value.type == "NumericLiteral")
                                         result.layout.push(innerField.value.value);
                                 });
@@ -318,24 +313,24 @@ angular.module('automationTrackBuilderApp')
         };
 
         $scope.cornerStraight = function() {
-            if ($scope.corners[$scope.selected].layout != STRAIGHT) {
+            if ($scope.corners[$scope.selected].layout != directions.STRAIGHT) {
                 $scope.corners[$scope.selected].layoutInfo = $scope.corners[$scope.selected].radius;
                 $scope.corners[$scope.selected].radius = 0;
             }
-            $scope.corners[$scope.selected].layout = STRAIGHT;
+            $scope.corners[$scope.selected].layout = directions.STRAIGHT;
         };
         $scope.cornerLeft = function() {
-            if ($scope.corners[$scope.selected].layout == STRAIGHT) {
+            if ($scope.corners[$scope.selected].layout == directions.STRAIGHT) {
                 $scope.corners[$scope.selected].radius = $scope.corners[$scope.selected].layoutInfo;
                 $scope.corners[$scope.selected].layoutInfo = 90;
             }
-            $scope.corners[$scope.selected].layout = LEFT;
+            $scope.corners[$scope.selected].layout = directions.LEFT;
         };
         $scope.cornerRight = function() {
-            if ($scope.corners[$scope.selected].layout == STRAIGHT) {
+            if ($scope.corners[$scope.selected].layout == directions.STRAIGHT) {
                 $scope.corners[$scope.selected].radius = $scope.corners[$scope.selected].layoutInfo;
                 $scope.corners[$scope.selected].layoutInfo = 90;
             }
-            $scope.corners[$scope.selected].layout = RIGHT;
+            $scope.corners[$scope.selected].layout = directions.RIGHT;
         };
-    });
+    }]);
