@@ -119,7 +119,7 @@ angular.module('automationTrackBuilderApp')
         this.split1 = 1;
         this.split2 = 2;
         this.scale = {pixels: 20, meters: 10};
-        this.corners = [defaultCorner];
+        this.corners = [angular.copy(defaultCorner)];
         this.selected = 0;
         //this.selectCorner = function(val) { selected = val; };
         //this.selectedCorner = function() { return corners[selected]; };
