@@ -7,33 +7,12 @@ var toRadians = function(degree) {
 angular.module('automationTrackBuilderApp')
     .controller('MainCtrl', ['$scope', 'directions', 'track', 'trackOverview',
                              function ($scope, directions, track, trackOverview) {
-        var overview;
         var trackTemplate;
         $scope.track = track;
 
         $scope.$on('$includeContentLoaded', function() {
-            overview = trackOverview('track-overview');
-            $scope.$watchCollection('track.start', function(a, b) { overview.draw(); });
-            $scope.$watchCollection('track.scale', function(a, b) { overview.draw(); });
-            $scope.$watch('track.corners', function(a, b) {
-                // can be optimized by only calculating the updated corner onwards
-                $scope.total2D = 0;
-                $scope.total3D = 0;
-                track.corners.forEach(function(corner) {
-                    if (corner.layout == directions.STRAIGHT) {
-                        corner.length2D = corner.layoutInfo;
-                    } else {
-                        corner.length2D = corner.radius * toRadians(corner.layoutInfo);
-                    }
-                    var slopeAngle = Math.atan(corner.slope/100);
-                    corner.length3D = corner.length2D / Math.cos(slopeAngle);
-                    corner.distance2D = $scope.total2D;
-                    corner.distance3D = $scope.total3D;
-                    $scope.total2D += corner.length2D;
-                    $scope.total3D += corner.length3D;
-                });
-                overview.draw();
-            }, true);
+            $scope.overview = trackOverview('track-overview');
+            $scope.onTrackUpdate();
             trackTemplate = angular.element("#track-template").text();
             Mustache.parse(trackTemplate);
         });
@@ -55,12 +34,12 @@ angular.module('automationTrackBuilderApp')
             var imgObj = new Image();
             imgObj.src = result;
             imgObj.onload = function() {
-                overview.setBackground(imgObj);
+                $scope.overview.setBackground(imgObj);
             };
         });
         $scope.importFile = loadFile('import-file', function(result) {
             track.parse(result);
-            $scope.$apply();
+            $scope.onTrackUpdate();
         });
         $scope.exportFile = function() {
             var data = angular.copy(track);
@@ -84,5 +63,23 @@ angular.module('automationTrackBuilderApp')
             });
             var trackText = Mustache.render(trackTemplate, data);
             window.open("data:text/x-lua;base64,"+btoa(trackText), '_blank');
+        };
+        $scope.onTrackUpdate = function() {
+            $scope.total2D = 0;
+            $scope.total3D = 0;
+            track.corners.forEach(function(corner) {
+                if (corner.layout == directions.STRAIGHT) {
+                    corner.length2D = corner.layoutInfo;
+                } else {
+                    corner.length2D = corner.radius * toRadians(corner.layoutInfo);
+                }
+                var slopeAngle = Math.atan(corner.slope/100);
+                corner.length3D = corner.length2D / Math.cos(slopeAngle);
+                corner.distance2D = $scope.total2D;
+                corner.distance3D = $scope.total3D;
+                $scope.total2D += corner.length2D;
+                $scope.total3D += corner.length3D;
+            });
+            $scope.overview.draw();
         };
     }]);

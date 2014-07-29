@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('automationTrackBuilderApp')
-    .factory('trackOverview', ['directions', 'track', function(directions, track) {
+    .factory('trackOverview', ['$timeout', 'directions', 'track', function($timeout, directions, track) {
         return function(el) {
             var canvas = new fabric.Canvas(el, {
                 containerClass: "center-block",
@@ -80,7 +80,10 @@ angular.module('automationTrackBuilderApp')
                         canvas.add(cornerJoint);
                         object.pos = i;
                         object.on('selected', function(e) {
-                            track.selected = this.pos;
+                            var self = this;
+                            $timeout(function() {
+                                track.selected = self.pos;
+                            });
                         });
                         corners.push(object);
                         position = dst;
