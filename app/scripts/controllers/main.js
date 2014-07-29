@@ -51,12 +51,31 @@ angular.module('automationTrackBuilderApp')
             data.camber = [];
             track.corners.forEach(function(corner) {
                 switch(corner.layout) {
-                    case  0: data.layout.push("STRAIGHT"); break;
-                    case  1: data.layout.push("LEFT"); break;
-                    case -1: data.layout.push("RIGHT"); break;
+                    case  0:
+                        data.layout.push("STRAIGHT");
+                        if (track.pixelMode)
+                            data.layoutInfo.push(corner.layoutInfo/track.getRatio());
+                        else
+                            data.layoutInfo.push(corner.layoutInfo);
+                        data.cornerRadius.push(0);
+                        break;
+                    case  1:
+                        data.layout.push("LEFT");
+                        data.layoutInfo.push(corner.layoutInfo);
+                        if (track.pixelMode)
+                            data.cornerRadius.push(corner.radius/track.getRatio());
+                        else
+                            data.cornerRadius.push(corner.radius);
+                        break;
+                    case -1:
+                        data.layout.push("RIGHT");
+                        data.layoutInfo.push(corner.layoutInfo);
+                        if (track.pixelMode)
+                            data.cornerRadius.push(corner.radius/track.getRatio());
+                        else
+                            data.cornerRadius.push(corner.radius);
+                        break;
                 }
-                data.layoutInfo.push(corner.layoutInfo);
-                data.cornerRadius.push(corner.radius);
                 data.slope.push(corner.slope);
                 data.sportiness.push(corner.sportiness);
                 data.camber.push(corner.camber);
@@ -73,6 +92,8 @@ angular.module('automationTrackBuilderApp')
                 } else {
                     corner.length2D = corner.radius * toRadians(corner.layoutInfo);
                 }
+                if (track.pixelMode)
+                    corner.length2D /= track.getRatio();
                 var slopeAngle = Math.atan(corner.slope/100);
                 corner.length3D = corner.length2D / Math.cos(slopeAngle);
                 corner.distance2D = $scope.total2D;

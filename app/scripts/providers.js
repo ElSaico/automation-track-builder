@@ -35,7 +35,7 @@ angular.module('automationTrackBuilderApp')
                     var prevSelected = track.selected;
                     var angle = 0;
                     var position = new fabric.Point(track.start.x/2, track.start.y/2);
-                    var ratio = track.scale.pixels / (2*track.scale.meters);
+                    var ratio = track.pixelMode ? 0.5 : track.getRatio()/2;
                     start.setPositionByOrigin(position);
                     canvas.clear();
                     corners = [];
@@ -105,6 +105,7 @@ angular.module('automationTrackBuilderApp')
 
 angular.module('automationTrackBuilderApp')
     .service('track', ['directions', function(directions) {
+         var self = this;
          var defaultCorner = {
             layout: 0,
             layoutInfo: 100,
@@ -114,6 +115,7 @@ angular.module('automationTrackBuilderApp')
             sportiness: 0
         };
 
+        this.pixelMode = false;
         this.name = "Track";
         this.start = {x: 640, y: 360};
         this.split1 = 1;
@@ -124,7 +126,6 @@ angular.module('automationTrackBuilderApp')
         //this.selectCorner = function(val) { selected = val; };
         //this.selectedCorner = function() { return corners[selected]; };
         this.parse = function(result) {
-            var self = this;
             var script = atob(result.split('base64,')[1]);
             var ast = luaparse.parse(script);
             ast.body.forEach(function(root) {
@@ -197,6 +198,7 @@ angular.module('automationTrackBuilderApp')
                                 break;
                         }
                     });
+                    self.pixelMode = false;
                     self.corners.length = 0;
                     for (var i = 0; i < result.layout.length; i++) {
                         self.corners.push({
@@ -246,5 +248,28 @@ angular.module('automationTrackBuilderApp')
                 this.corners[this.selected].layoutInfo = 90;
             }
             this.corners[this.selected].layout = directions.RIGHT;
+        };
+        this.getRatio = function() {
+            return this.scale.pixels / this.scale.meters;
+        };
+        this.setPixelMode = function() {
+            if (this.pixelMode) return;
+            this.corners.forEach(function(corner) {
+                if (corner.layout == directions.STRAIGHT)
+                    corner.layoutInfo *= self.getRatio();
+                else
+                    corner.radius *= self.getRatio();
+            });
+            this.pixelMode = true;
+        };
+        this.setMeterMode = function() {
+            if (!this.pixelMode) return;
+            this.corners.forEach(function(corner) {
+                if (corner.layout == directions.STRAIGHT)
+                    corner.layoutInfo /= self.getRatio();
+                else
+                    corner.radius /= self.getRatio();
+            });
+            this.pixelMode = false;
         };
     }]);

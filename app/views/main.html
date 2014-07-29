@@ -17,6 +17,18 @@
         3D total length: {{ total3D|number:2 }}m
     </div>
     <div class="col-sm-4">
+        <div class="btn-group btn-group-justified">
+            <div class="btn-group">
+                <button class="btn btn-default" ng-class="{active: track.pixelMode}" ng-click="track.setPixelMode()">
+                    Pixels
+                </button>
+            </div>
+                <div class="btn-group">
+                <button class="btn btn-default" ng-class="{active: !track.pixelMode}" ng-click="track.setMeterMode()">
+                    Meters
+                </button>
+            </div>
+        </div>
         <button class="btn btn-default btn-block" ng-click="track.cornerPush(); onTrackUpdate()">
             <span class="glyphicon glyphicon-plus"></span>
             Append corner
@@ -160,14 +172,16 @@
             <label>Length</label>
             <div class="input-group">
                 <input type="number" class="form-control" min="1" ng-model="track.corners[track.selected].layoutInfo" ng-change="onTrackUpdate()" />
-                <span class="input-group-addon">m</span>
+                <span ng-if="track.pixelMode" class="input-group-addon">px</span>
+                <span ng-if="!track.pixelMode" class="input-group-addon">m</span>
             </div>
         </div>
         <div class="form-group" ng-if="track.corners[track.selected].layout !== 0">
             <label>Corner radius</label>
             <div class="input-group">
                 <input type="number" class="form-control" min="1" ng-model="track.corners[track.selected].radius" ng-change="onTrackUpdate()" />
-                <span class="input-group-addon">m</span>
+                <span ng-if="track.pixelMode" class="input-group-addon">px</span>
+                <span ng-if="!track.pixelMode" class="input-group-addon">m</span>
             </div>
         </div>
         <div class="form-group" ng-if="track.corners[track.selected].layout !== 0">
@@ -194,6 +208,10 @@
             </div>
         </div>
     </div>
+</div>
+<div class="alert alert-info" role="alert" ng-if="track.pixelMode">
+	<strong>Attention:</strong> The track preview above is scaled 1:2.
+	Take this into consideration when defining the starting position and corner lengths.
 </div>
 
 <script id="track-template" type="text/x-lua">
