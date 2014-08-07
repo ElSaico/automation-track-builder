@@ -2,6 +2,7 @@ node_modules
 dist
 .tmp
 .sass-cache
+.grunt
 app/bower_components
 .idea
 npm-debug.log
