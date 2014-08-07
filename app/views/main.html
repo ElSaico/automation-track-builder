@@ -1,11 +1,33 @@
-<div class="header">
-    <h3 class="text-muted">Automation Track Editor</h3>
+<div class="navbar navbar-default navbar-static-top">
+    <div class="container">
+        <div class="navbar-header navbar-brand">
+            <span class="text-primary">Automation Track Builder</span>
+        </div>
+        <div class="collapse navbar-collapse navbar-right">
+            <ul class="nav navbar-nav">
+                <li>
+                    <input id="import-file" type="file" class="hidden" />
+                    <a ng-click="importFile()">
+                        <span class="glyphicon glyphicon-import"></span>
+                        Load file
+                    </a>
+                </li>
+                <li>
+                    <a ng-click="exportFile()">
+                        <span class="glyphicon glyphicon-export"></span>
+                        Save file
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 <canvas id="track-overview" width="640" height="360">
 </canvas>
 <br/>
 
+<div class="container">
 <div class="row">
     <div class="col-sm-4">
         <div class="form-group">
@@ -17,18 +39,6 @@
         3D total length: {{ total3D|number:2 }}m
     </div>
     <div class="col-sm-4">
-        <div class="btn-group btn-group-justified">
-            <div class="btn-group">
-                <button class="btn btn-default" ng-class="{active: track.pixelMode}" ng-click="track.setPixelMode()">
-                    Pixels
-                </button>
-            </div>
-                <div class="btn-group">
-                <button class="btn btn-default" ng-class="{active: !track.pixelMode}" ng-click="track.setMeterMode()">
-                    Meters
-                </button>
-            </div>
-        </div>
         <button class="btn btn-default btn-block" ng-click="track.cornerPush(); onTrackUpdate()">
             <span class="glyphicon glyphicon-plus"></span>
             Append corner
@@ -44,19 +54,12 @@
             <span class="glyphicon glyphicon-picture"></span>
             Load background<br/><small>1280x720</small>
         </button>
-        <div class="btn-group btn-group-lg btn-group-justified">
-            <div class="btn-group">
-                <input id="import-file" type="file" class="hidden" />
-                <button type="button" class="btn btn-default" ng-click="importFile()">
-                    <span class="glyphicon glyphicon-import"></span>
-                    Import file
-                </button>
+        <div class="btn-group btn-group-justified">
+            <div class="btn btn-default" ng-class="{active: track.pixelMode}" ng-click="track.setPixelMode()">
+                Pixels
             </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default" ng-click="exportFile()">
-                    <span class="glyphicon glyphicon-export"></span>
-                    Export file
-                </button>
+            <div class="btn btn-default" ng-class="{active: !track.pixelMode}" ng-click="track.setMeterMode()">
+                Meters
             </div>
         </div>
     </div>
@@ -212,6 +215,7 @@
 <div class="alert alert-info" role="alert" ng-if="track.pixelMode">
 	<strong>Attention:</strong> The track preview above is scaled 1:2.
 	Take this into consideration when defining the starting position and corner lengths.
+</div>
 </div>
 
 <script id="track-template" type="text/x-lua">
